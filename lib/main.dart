@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:ai_bible_companion/services/bookmark_service.dart';
+import 'package:ai_bible_companion/services/service_provider.dart';
 import 'package:ai_bible_companion/search_screen.dart';
-import 'package.ai_bible_companion/image_screen.dart';
+import 'package:ai_bible_companion/image_screen.dart';
 import 'package:ai_bible_companion/chat_screen.dart';
 import 'package:ai_bible_companion/bookmarks_screen.dart';
 
 void main() {
-  runApp(const AIBibleCompanion());
+  final bookmarkService = BookmarkService();
+  runApp(
+    ServiceProvider(
+      bookmarkService: bookmarkService,
+      child: const AIBibleCompanion(),
+    ),
+  );
 }
 
 class AIBibleCompanion extends StatelessWidget {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ai_bible_companion/services/service_provider.dart';
+import 'package:ai_bible_companion/services/bookmark_service.dart';
 
 class BookmarksScreen extends StatefulWidget {
   const BookmarksScreen({Key? key}) : super(key: key);
@@ -8,56 +10,80 @@ class BookmarksScreen extends StatefulWidget {
 }
 
 class _BookmarksScreenState extends State<BookmarksScreen> {
-  final List<Map<String, String>> _bookmarkedVerses = [
-    {
-      'reference': 'Philippians 4:13',
-      'text': 'I can do all things through him who strengthens me.'
-    },
-    {
-      'reference': 'Isaiah 41:10',
-      'text':
-          'Fear not, for I am with you; be not dismayed, for I am your God; I will strengthen you, I will help you, I will uphold you with my righteous right hand.'
-    },
-    {
-      'reference': 'Joshua 1:9',
-      'text':
-          'Have I not commanded you? Be strong and courageous. Do not be frightened, and do not be dismayed, for the Lord your God is with you wherever you go.'
-    },
-  ];
+  late BookmarkService _bookmarkService;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bookmarkService = ServiceProvider.of(context)!.bookmarkService;
+    _bookmarkService.addListener(_onBookmarksChanged);
+  }
+
+  @override
+  void dispose() {
+    _bookmarkService.removeListener(_onBookmarksChanged);
+    super.dispose();
+  }
+
+  void _onBookmarksChanged() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bookmarkedVerses = _bookmarkService.bookmarkedVerses;
+
     return Scaffold(
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: _bookmarkedVerses.length,
-        itemBuilder: (context, index) {
-          final verse = _bookmarkedVerses[index];
-          return Card(
-            elevation: 4.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    verse['reference']!,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    verse['text']!,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
+      body: bookmarkedVerses.isEmpty
+          ? const Center(
+              child: Text(
+                'You have no bookmarked verses.',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: bookmarkedVerses.length,
+              itemBuilder: (context, index) {
+                final verse = bookmarkedVerses[index];
+                return Card(
+                  elevation: 4.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          verse['reference']!,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          verse['text']!,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 8.0),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              _bookmarkService.removeBookmark(verse);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
