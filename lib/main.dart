@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ai_bible_companion/search_screen.dart';
+import 'package:ai_bible_companion/image_screen.dart';
 
 void main() {
   runApp(const AIBibleCompanion());
@@ -83,16 +84,6 @@ class ChatScreen extends StatelessWidget {
 }
 
 
-class ImageScreen extends StatelessWidget {
-  const ImageScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Image Screen'),
-    );
-  }
-}
 
 class BookmarksScreen extends StatelessWidget {
   const BookmarksScreen({Key? key}) : super(key: key);
