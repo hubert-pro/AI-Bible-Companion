@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ai_bible_companion/search_screen.dart';
 import 'package.ai_bible_companion/image_screen.dart';
 import 'package:ai_bible_companion/chat_screen.dart';
+import 'package:ai_bible_companion/bookmarks_screen.dart';
 
 void main() {
   runApp(const AIBibleCompanion());
@@ -69,20 +70,6 @@ class _HomeScreenState extends State<HomeScreen>
           BookmarksScreen(),
         ],
       ),
-    );
-  }
-}
-
-
-
-
-class BookmarksScreen extends StatelessWidget {
-  const BookmarksScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Bookmarks Screen'),
     );
   }
 }
