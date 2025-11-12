@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:ai_bible_companion/services/bookmark_service.dart';
+import 'package:ai_bible_companion/services/connectivity_service.dart';
 import 'package:ai_bible_companion/services/service_provider.dart';
 import 'package:ai_bible_companion/search_screen.dart';
 import 'package:ai_bible_companion/image_screen.dart';
 import 'package:ai_bible_companion/chat_screen.dart';
 import 'package:ai_bible_companion/bookmarks_screen.dart';
+import 'package:ai_bible_companion/connectivity_status_page.dart';
 
 void main() {
   final bookmarkService = BookmarkService();
+  final connectivityService = ConnectivityService();
   runApp(
     ServiceProvider(
       bookmarkService: bookmarkService,
+      connectivityService: connectivityService,
       child: const AIBibleCompanion(),
     ),
   );
@@ -45,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -66,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen>
             Tab(icon: Icon(Icons.search), text: 'Search'),
             Tab(icon: Icon(Icons.image), text: 'Image'),
             Tab(icon: Icon(Icons.bookmark), text: 'Bookmarks'),
+            Tab(icon: Icon(Icons.wifi), text: 'Connectivity'),
           ],
         ),
       ),
@@ -76,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen>
           SearchScreen(),
           ImageScreen(),
           BookmarksScreen(),
+          ConnectivityStatusPage(),
         ],
       ),
     );
