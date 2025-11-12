@@ -9,7 +9,8 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<Map<String, String>> _searchResults = [
+
+  final List<Map<String, String>> _allVerses = [
     {
       'reference': 'John 3:16',
       'text':
@@ -27,6 +28,37 @@ class _SearchScreenState extends State<SearchScreen> {
     },
   ];
 
+  List<Map<String, String>> _displayedResults = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _displayedResults = List.from(_allVerses);
+    _searchController.addListener(_performSearch);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_performSearch);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _performSearch() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        _displayedResults = List.from(_allVerses);
+      } else {
+        _displayedResults = _allVerses.where((verse) {
+          final reference = verse['reference']!.toLowerCase();
+          final text = verse['text']!.toLowerCase();
+          return reference.contains(query) || text.contains(query);
+        }).toList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,26 +72,31 @@ class _SearchScreenState extends State<SearchScreen> {
                 labelText: 'Search for a verse or topic',
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
-                  onPressed: () {
-                    // TODO: Implement search functionality
-                  },
+                  onPressed: _performSearch,
                 ),
               ),
             ),
             const SizedBox(height: 16.0),
             Expanded(
-              child: ListView.builder(
-                itemCount: _searchResults.length,
-                itemBuilder: (context, index) {
-                  final verse = _searchResults[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(verse['reference']!),
-                      subtitle: Text(verse['text']!),
+              child: _displayedResults.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No results found.',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _displayedResults.length,
+                      itemBuilder: (context, index) {
+                        final verse = _displayedResults[index];
+                        return Card(
+                          child: ListTile(
+                            title: Text(verse['reference']!),
+                            subtitle: Text(verse['text']!),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
