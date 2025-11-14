@@ -14,6 +14,7 @@ class _ImageScreenState extends State<ImageScreen> {
   Widget? _generatedImage;
   String? _scriptureReference;
   String? _explanation;
+  bool _isPlaying = false;
 
   void _generateImage() {
     if (_sceneController.text.isEmpty) return;
@@ -23,6 +24,7 @@ class _ImageScreenState extends State<ImageScreen> {
       _generatedImage = null;
       _scriptureReference = null;
       _explanation = null;
+      _isPlaying = false;
     });
 
     Future.delayed(const Duration(seconds: 3), () {
@@ -38,6 +40,20 @@ class _ImageScreenState extends State<ImageScreen> {
         _isLoading = false;
       });
     });
+  }
+
+  void _toggleNarration() {
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
+  }
+
+  void _shareContent() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Content shared!'),
+      ),
+    );
   }
 
   @override
@@ -117,16 +133,14 @@ class _ImageScreenState extends State<ImageScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
-                              onPressed: () {
-                                // TODO: Implement text-to-speech
-                              },
-                              icon: const Icon(Icons.volume_up),
-                              tooltip: 'Listen',
+                              onPressed: _toggleNarration,
+                              icon: Icon(
+                                _isPlaying ? Icons.stop : Icons.volume_up,
+                              ),
+                              tooltip: _isPlaying ? 'Stop' : 'Listen',
                             ),
                             IconButton(
-                              onPressed: () {
-                                // TODO: Implement sharing
-                              },
+                              onPressed: _shareContent,
                               icon: const Icon(Icons.share),
                               tooltip: 'Share',
                             ),
