@@ -1,35 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:ai_bible_companion/services/bookmark_service.dart';
 import 'package:ai_bible_companion/services/connectivity_service.dart';
+import 'package:ai_bible_companion/services/theme_service.dart';
 import 'package:ai_bible_companion/services/service_provider.dart';
 import 'package:ai_bible_companion/search_screen.dart';
 import 'package:ai_bible_companion/image_screen.dart';
 import 'package:ai_bible_companion/chat_screen.dart';
 import 'package:ai_bible_companion/bookmarks_screen.dart';
 import 'package:ai_bible_companion/connectivity_status_page.dart';
+import 'package:ai_bible_companion/settings_page.dart';
 
 void main() {
   final bookmarkService = BookmarkService();
   final connectivityService = ConnectivityService();
+  final themeService = ThemeService();
   runApp(
     ServiceProvider(
       bookmarkService: bookmarkService,
       connectivityService: connectivityService,
-      child: const AIBibleCompanion(),
+      themeService: themeService,
+      child: AIBibleCompanion(themeService: themeService),
     ),
   );
 }
 
-class AIBibleCompanion extends StatelessWidget {
-  const AIBibleCompanion({Key? key}) : super(key: key);
+class AIBibleCompanion extends StatefulWidget {
+  final ThemeService themeService;
+  const AIBibleCompanion({Key? key, required this.themeService}) : super(key: key);
+
+  @override
+  State<AIBibleCompanion> createState() => _AIBibleCompanionState();
+}
+
+class _AIBibleCompanionState extends State<AIBibleCompanion> {
+  @override
+  void initState() {
+    super.initState();
+    widget.themeService.addListener(_onThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.themeService.removeListener(_onThemeChanged);
+    super.dispose();
+  }
+
+  void _onThemeChanged() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AI Bible Companion',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: widget.themeService.themeMode,
       home: const HomeScreen(),
     );
   }
@@ -49,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -71,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen>
             Tab(icon: Icon(Icons.image), text: 'Image'),
             Tab(icon: Icon(Icons.bookmark), text: 'Bookmarks'),
             Tab(icon: Icon(Icons.wifi), text: 'Connectivity'),
+            Tab(icon: Icon(Icons.settings), text: 'Settings'),
           ],
         ),
       ),
@@ -82,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen>
           ImageScreen(),
           BookmarksScreen(),
           ConnectivityStatusPage(),
+          SettingsPage(),
         ],
       ),
     );
